@@ -1,141 +1,169 @@
 <html lang="es"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trivia: Activo, Pasivo y Patrimonio</title>
+    <title>Repaso de Contabilidad: 60 Cuentas</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
-        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 600px; text-align: center; border-top: 10px solid #3498db; }
-        .category { color: #3498db; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; font-size: 0.9rem; }
-        h1 { font-size: 1.2rem; color: #2c3e50; min-height: 100px; margin: 20px 0; display: flex; align-items: center; justify-content: center; line-height: 1.6; }
-        input { width: 100%; padding: 15px; border: 2px solid #ddd; border-radius: 10px; font-size: 1.1rem; text-align: center; outline: none; margin-bottom: 20px; }
-        input:focus { border-color: #3498db; }
-        button { background: #3498db; color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-size: 1.1rem; width: 100%; font-weight: bold; }
-        .feedback { margin-top: 15px; font-weight: bold; height: 25px; }
-        .stats { margin-top: 25px; display: flex; justify-content: space-between; color: #7f8c8d; font-size: 0.9rem; border-top: 1px solid #eee; padding-top: 15px; }
+        body { 
+            background-color: #ffffff; 
+            background-image: linear-gradient(#e1f5fe 1px, transparent 1px), linear-gradient(90deg, #e1f5fe 1px, transparent 1px);
+            background-size: 20px 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; margin: 0; padding: 15px;
+        }
+        .container { 
+            background: white; padding: 30px; border-radius: 12px; 
+            box-shadow: 0 8px 20px rgba(0,123,255,0.15); 
+            width: 100%; max-width: 500px; text-align: center;
+            border: 2px solid #03a9f4;
+        }
+        .header-info { display: flex; justify-content: space-between; color: #0288d1; font-weight: bold; font-size: 0.9rem; margin-bottom: 10px; }
+        .progress-bar { width: 100%; background: #e3f2fd; height: 12px; border-radius: 6px; margin-bottom: 20px; overflow: hidden; }
+        .progress-fill { background: #03a9f4; height: 100%; width: 0%; transition: 0.4s; }
+        .category-tag { background: #b3e5fc; color: #01579b; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; text-transform: uppercase; }
+        h2 { color: #333; font-size: 1.15rem; min-height: 90px; margin: 20px 0; line-height: 1.5; }
+        input { width: 100%; padding: 12px; border: 2px solid #b3e5fc; border-radius: 8px; font-size: 1.1rem; text-align: center; outline: none; margin-bottom: 10px; }
+        input:focus { border-color: #03a9f4; }
+        .actions { display: flex; gap: 10px; flex-direction: column; }
+        .btn-check { background: #03a9f4; color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: bold; }
+        .btn-skip { background: #f1f8fe; color: #0288d1; border: 1px solid #03a9f4; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; }
+        .feedback { margin-top: 15px; font-weight: bold; min-height: 25px; font-size: 0.95rem; }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <div id="cat-label" class="category">Activo</div>
-    <h1 id="question">Billetes, monedas y cheques recibidos propiedad de la empresa.</h1>
-    <input type="text" id="answer-input" placeholder="Nombre de la cuenta..." autocomplete="off">
-    <button onclick="checkAnswer()">VERIFICAR</button>
-    <div class="feedback" id="feedback"></div>
-    <div class="stats">
-        <span>Pregunta: <span id="current">1</span>/60</span>
-        <span>Aciertos: <span id="points">0</span></span>
+<div class="container">
+    <div class="header-info">
+        <span id="cat-text" class="category-tag">Pasivo</span>
+        <span id="counter">1 / 60</span>
     </div>
+    <div class="progress-bar"><div class="progress-fill" id="bar" style="width: 0%;"></div></div>
+    <h2 id="question">Valor de los impuestos vencidos que no se han cancelado.</h2>
+    <input type="text" id="answer" placeholder="Escribe el nombre aquí..." autocomplete="off">
+    <div class="actions">
+        <button class="btn-check" onclick="check()">VERIFICAR</button>
+        <button class="btn-skip" onclick="skip()">OMITIR (VER RESPUESTA)</button>
+    </div>
+    <div class="feedback" id="msg"></div>
 </div>
 
 <script>
-    const accounts = [
-        // --- ACTIVO ---
-        {q: "Recurso controlado por la entidad como resultado de sucesos pasados.", a: "Activo", c: "Activo"},
+    const db = [
+        {q: "Recurso controlado por la entidad como resultado de sucesos pasados del que espera beneficios.", a: "Activo", c: "Concepto"},
         {q: "Billetes, monedas y cheques recibidos propiedad de la empresa.", a: "Caja", c: "Activo"},
         {q: "Fondo fijo de dinero establecido para cubrir gastos menores.", a: "Caja chica", c: "Activo"},
         {q: "Valor de los depósitos en cuenta de cheques y de ahorro.", a: "Bancos", c: "Activo"},
-        {q: "Títulos valores propiedad de la empresa como bonos del Estado.", a: "Inversiones en bonos", c: "Activo"},
-        {q: "Depósitos efectuados en instituciones bancarias a plazos fijados.", a: "Depositos a plazo", c: "Activo"},
-        {q: "Personas que deben al negocio por venta de mercadería o servicio a crédito.", a: "Clientes", c: "Activo"},
-        {q: "Personas que deben al negocio por concepto distinto a la venta de mercaderías.", a: "Deudores varios", c: "Activo"},
+        {q: "Títulos valores como bonos del Estado con diversos vencimientos.", a: "Inversiones en bonos", c: "Activo"},
+        {q: "Depósitos en instituciones bancarias a plazos fijados por el banco.", a: "Depositos a plazo", c: "Activo"},
+        {q: "Personas que deben por venta de mercadería al crédito con factura.", a: "Clientes", c: "Activo"},
+        {q: "Personas que deben por concepto distinto a mercaderías amparados con factura.", a: "Deudores varios", c: "Activo"},
         {q: "Deudas que contraen los empleados y funcionarios con la empresa.", a: "Funcionarios y empleados", c: "Activo"},
         {q: "Valor de los intereses ganados por la empresa pendientes de cobro.", a: "Intereses por cobrar", c: "Activo"},
         {q: "Valor de los alquileres vencidos que adeudan terceras personas.", a: "Alquileres por cobrar", c: "Activo"},
         {q: "Utilidades ganadas pendientes de cobro generadas por inversiones.", a: "Dividendos por cobrar", c: "Activo"},
-        {q: "Valores que la empresa paga para garantizar compra de mercadería o servicios.", a: "Anticipos a proveedores", c: "Activo"},
+        {q: "Valores pagados para garantizar compra de mercadería o servicios futuros.", a: "Anticipos a proveedores", c: "Activo"},
         {q: "Títulos valores a favor del negocio, como letras de cambio o pagarés.", a: "Documentos por cobrar", c: "Activo"},
         {q: "Existencia de artículos en bodega destinados para la venta.", a: "Inventario", c: "Activo"},
         {q: "Materiales y útiles que se emplean para el desarrollo de operaciones de oficina.", a: "Papeleria y utiles", c: "Activo"},
         {q: "Materiales utilizados para empacar artículos destinados a la venta.", a: "Material de empaque", c: "Activo"},
         {q: "Materiales en existencia utilizados en la higienización del edificio.", a: "Material de aseo", c: "Activo"},
-        {q: "Anuncios en medios por los cuales se da a conocer al público actividades o servicios.", a: "Propaganda y publicidad", c: "Activo"},
+        {q: "Anuncios en medios por los cuales se da a conocer al público actividades.", a: "Propaganda y publicidad", c: "Activo"},
         {q: "Pagos a aseguradoras para asegurar empleados y bienes contra riesgos.", a: "Primas de seguro", c: "Activo"},
-        {q: "Importe de alquileres ya cancelados por adelantado que aún no se han vencido.", a: "Rentas pagadas por anticipado", c: "Activo"},
-        {q: "Importe pagado a editoras de revistas o periódicos que aún no se han devengado.", a: "Suscripciones pagadas por anticipado", c: "Activo"},
+        {q: "Alquileres ya cancelados por adelantado que aún no se han vencido.", a: "Rentas pagadas por anticipado", c: "Activo"},
+        {q: "Pagos a editoras de revistas o periódicos que aún no se han devengado.", a: "Suscripciones pagadas por anticipado", c: "Activo"},
         {q: "Intereses que la empresa ha pagado antes de la fecha de vencimiento.", a: "Intereses pagados por anticipado", c: "Activo"},
-        {q: "Títulos valores propiedad de la empresa que representan una fracción del capital.", a: "Inversiones en acciones", c: "Activo"},
+        {q: "Títulos valores que representan una fracción del capital de otra empresa.", a: "Inversiones en acciones", c: "Activo"},
         {q: "Parcelas de tierra propiedad de la empresa.", a: "Terrenos", c: "Activo"},
-        {q: "Edificaciones que posee la empresa para realizar distintas actividades.", a: "Edificios", c: "Activo"},
+        {q: "Edificaciones que posee la empresa para realizar actividades.", a: "Edificios", c: "Activo"},
         {q: "Conjunto de máquinas que utilizan para la producción de un bien.", a: "Maquinaria", c: "Activo"},
-        {q: "Mobiliario y equipo necesario para desempeñar funciones (escritorios, sillas).", a: "Mobiliario y equipo", c: "Activo"},
-        {q: "Automóviles propiedad de la empresa utilizados por el personal directivo.", a: "Vehiculos", c: "Activo"},
-        {q: "Vehículos que posee la empresa utilizados para el transporte del personal.", a: "Equipo de transporte", c: "Activo"},
+        {q: "Mobiliario necesario para funciones como escritorios y sillas.", a: "Mobiliario y equipo", c: "Activo"},
+        {q: "Automóviles propiedad de la empresa utilizados por directivos.", a: "Vehiculos", c: "Activo"},
+        {q: "Vehículos utilizados para el transporte del personal.", a: "Equipo de transporte", c: "Activo"},
         {q: "Vehículos que utiliza la empresa para transporte de mercadería.", a: "Equipo de reparto", c: "Activo"},
         {q: "Conjunto de utensilios que se utilizan para reparar el equipo.", a: "Herramientas", c: "Activo"},
-        {q: "Beneficios futuros procedentes de activos no identificados individualmente.", a: "Credito mercantil", c: "Activo"},
+        {q: "Beneficios futuros procedentes de activos no identificados.", a: "Credito mercantil", c: "Activo"},
         {q: "Derechos sobre las ediciones de material bibliográfico.", a: "Derechos de autor", c: "Activo"},
-        {q: "Derechos exclusivos para la producción, uso y venta de un producto determinado.", a: "Marcas y patentes", c: "Activo"},
+        {q: "Derechos exclusivos para la producción y venta de un producto.", a: "Marcas y patentes", c: "Activo"},
         {q: "Licencias de software compradas por la empresa.", a: "Programas informaticos", c: "Activo"},
-        {q: "Cantidades que la empresa ha depositado para garantizar un servicio.", a: "Depositos en garantia", c: "Activo"},
+        {q: "Cantidades depositadas para garantizar servicios como energía o agua.", a: "Depositos en garantia", c: "Activo"},
 
         // --- PASIVO ---
-        {q: "Obligación presente de la empresa surgida a raíz de sucesos pasados.", a: "Pasivo", c: "Pasivo"},
-        {q: "Personas a quienes se debe por compra de mercadería al crédito firmando factura.", a: "Proveedores", c: "Pasivo"},
-        {q: "Personas a quienes se debe por concepto distinto a mercaderías sin garantía firmada.", a: "Acreedores varios", c: "Pasivo"},
+        {q: "Obligación presente de la empresa surgida a raíz de sucesos pasados.", a: "Pasivo", c: "Concepto"},
+        {q: "Personas a quienes se debe por compra de mercadería al crédito con factura.", a: "Proveedores", c: "Pasivo"},
+        {q: "Personas a quienes se debe por concepto distinto a mercaderías sin garantía.", a: "Acreedores varios", c: "Pasivo"},
         {q: "Sueldos y salarios que la empresa adeuda a sus empleados.", a: "Sueldos y salarios por pagar", c: "Pasivo"},
-        {q: "Valor de los impuestos vencidos que la empresa no ha cancelado.", a: "Impuestos por pagar", c: "Pasivo"},
-        {q: "Importe de intereses que la empresa adeuda por utilización de financiamiento.", a: "Intereses por pagar", c: "Pasivo"},
-        {q: "Valores recibidos para garantizar venta de mercadería o servicios posteriores.", a: "Anticipos de clientes", c: "Pasivo"},
-        {q: "Obligaciones por reclamos legales de clientes, garantías o compensaciones.", a: "Provisiones por pagar", c: "Pasivo"},
+        {q: "Valor de los impuestos vencidos que no se han cancelado.", a: "Impuestos por pagar", c: "Pasivo"},
+        {q: "Importe de intereses que la empresa adeuda por financiamiento.", a: "Intereses por pagar", c: "Pasivo"},
+        {q: "Valores recibidos para garantizar venta de mercadería posterior.", a: "Anticipos de clientes", c: "Pasivo"},
+        {q: "Obligaciones por reclamos legales, garantías o compensaciones.", a: "Provisiones por pagar", c: "Pasivo"},
         {q: "Títulos de crédito a cargo del negocio como letras de cambio o pagarés.", a: "Documentos por pagar", c: "Pasivo"},
         {q: "Préstamos que las instituciones bancarias conceden a la empresa.", a: "Prestamos bancarios", c: "Pasivo"},
-        {q: "Préstamos que tienen como garantía la escritura de un bien inmueble.", a: "Prestamos hipotecarios", c: "Pasivo"},
+        {q: "Préstamos que tienen como garantía la escritura de un inmueble.", a: "Prestamos hipotecarios", c: "Pasivo"},
         {q: "Importe de rentas que no se han vencido y se han cobrado adelantadas.", a: "Rentas cobradas por anticipado", c: "Pasivo"},
         {q: "Intereses que aún no están vencidos y se han cobrado por adelantado.", a: "Intereses cobrados por anticipado", c: "Pasivo"},
-        {q: "Servicios cobrados antes de la fecha de vencimiento sin haberse prestado aún.", a: "Servicios cobrados por anticipado", c: "Pasivo"},
+        {q: "Servicios cobrados antes de la fecha sin haberse prestado aún.", a: "Servicios cobrados por anticipado", c: "Pasivo"},
         {q: "Valores recibidos por honorarios donde todavía no se ha prestado el servicio.", a: "Honorarios cobrados por anticipado", c: "Pasivo"},
 
         // --- PATRIMONIO ---
-        {q: "Parte residual de los activos de la empresa una vez deducidos todos sus pasivos.", a: "Patrimonio", c: "Patrimonio"},
-        {q: "Suma de las aportaciones efectuadas por el dueño o los socios.", a: "Capital", c: "Patrimonio"},
-        {q: "Valores que el dueño retira para usos personales sin relación con la empresa.", a: "Cuenta personal", c: "Patrimonio"},
-        {q: "Se constituye separando anualmente de las utilidades netas el 5% como mínimo.", a: "Reserva legal", c: "Patrimonio"},
-        {q: "Valores separados de las utilidades específicamente para construir el edificio.", a: "Reserva para construcciones de edificios", c: "Patrimonio"},
-        {q: "Valores separados de las utilidades específicamente para comprar muebles.", a: "Reserva para compra de mobiliario y equipo", c: "Patrimonio"},
-        {q: "Representa las ganancias o pérdidas de operaciones de ejercicios anteriores.", a: "Utilidad de años anteriores", c: "Patrimonio"},
-        {q: "Utilidades o pérdidas que la empresa ha obtenido en el periodo contable.", a: "Utilidad del ejercicio", c: "Patrimonio"}
+        {q: "Parte residual de los activos una vez deducidos todos sus pasivos.", a: "Patrimonio", c: "Concepto"},
+        {q: "Suma de las aportaciones efectuadas por el dueño o los socios.", a: "Capital social", c: "Patrimonio"},
+        {q: "Valores que el dueño retira para usos personales.", a: "Cuenta personal", c: "Patrimonio"},
+        {q: "Reserva del 5% mínimo de utilidades según el Código de Comercio.", a: "Reserva legal", c: "Patrimonio"},
+        {q: "Valores separados específicamente para construir el edificio.", a: "Reserva para construcciones de edificios", c: "Patrimonio"},
+        {q: "Valores separados específicamente para la compra de mobiliario.", a: "Reserva para compra de mobiliario y equipo", c: "Patrimonio"},
+        {q: "Utilidades o pérdidas de operaciones de ejercicios anteriores.", a: "Utilidad de años anteriores", c: "Patrimonio"},
+        {q: "Utilidades o pérdidas obtenidas en el periodo contable actual.", a: "Utilidad del ejercicio", c: "Patrimonio"}
     ];
 
-    let gameData = [], currentIdx = 0, score = 0;
+    let game = [], idx = 0;
 
-    function init() {
-        gameData = [...accounts].sort(() => Math.random() - 0.5);
-        updateUI();
+    function start() {
+        game = [...db].sort(() => Math.random() - 0.5);
+        show();
     }
 
-    function updateUI() {
-        if(currentIdx < gameData.length) {
-            document.getElementById('cat-label').innerText = gameData[currentIdx].c;
-            document.getElementById('question').innerText = gameData[currentIdx].q;
-            document.getElementById('current').innerText = currentIdx + 1;
-            document.getElementById('answer-input').value = "";
-            document.getElementById('feedback').innerText = "";
+    function show() {
+        if(idx < game.length) {
+            document.getElementById('cat-text').innerText = game[idx].c;
+            document.getElementById('question').innerText = game[idx].q;
+            document.getElementById('counter').innerText = `${idx + 1} / ${game.length}`;
+            document.getElementById('bar').style.width = `${(idx/game.length)*100}%`;
+            document.getElementById('answer').value = "";
+            document.getElementById('msg').innerText = "";
+            document.getElementById('answer').focus();
         } else {
-            document.getElementById('question').innerText = "¡FELICIDADES! HAS TERMINADO LAS 60 CUENTAS.";
-            document.getElementById('answer-input').style.display = "none";
+            document.getElementById('question').innerText = "¡Excelente! Has completado las 60 cuentas.";
+            document.querySelector('.actions').style.display = "none";
+            document.getElementById('answer').style.display = "none";
         }
     }
 
-    function checkAnswer() {
-        let user = document.getElementById('answer-input').value.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        let correct = gameData[currentIdx].a.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    function check() {
+        let u = document.getElementById('answer').value.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        let a = game[idx].a.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         
-        if(user === correct) {
-            score++;
-            document.getElementById('points').innerText = score;
-            document.getElementById('feedback').innerText = "¡Correcto! ✓";
-            document.getElementById('feedback').style.color = "#27ae60";
-            currentIdx++;
-            setTimeout(updateUI, 800);
+        if(u === a || (a === "capital social" && u === "capital")) {
+            document.getElementById('msg').innerText = "✓ ¡Correcto!";
+            document.getElementById('msg').style.color = "#28a745";
+            idx++;
+            setTimeout(show, 600);
         } else {
-            document.getElementById('feedback').innerText = "Incorrecto. ¡Revisa el texto!";
-            document.getElementById('feedback').style.color = "#e74c3c";
+            document.getElementById('msg').innerText = "✗ Respuesta incorrecta";
+            document.getElementById('msg').style.color = "#dc3545";
         }
     }
 
-    document.getElementById('answer-input').addEventListener('keypress', e => { if(e.key === 'Enter') checkAnswer(); });
-    init();
+    function skip() {
+        document.getElementById('msg').style.color = "#0288d1";
+        document.getElementById('msg').innerText = "La respuesta era: " + game[idx].a;
+        setTimeout(() => {
+            idx++;
+            show();
+        }, 2000);
+    }
+
+    document.getElementById('answer').addEventListener('keypress', (e) => { if(e.key === 'Enter') check(); });
+    start();
 </script>
 
 </body></html>
