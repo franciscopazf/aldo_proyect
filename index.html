@@ -3,146 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>El Reto de las 60 Cuentas Completo c</title>
+    <title>Master Contable: 60 Cuentas</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #2c3e50; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 15px; }
-        .card { background: white; padding: 25px; border-radius: 15px; width: 100%; max-width: 550px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.3); border-top: 8px solid #27ae60; }
-        .stats { display: flex; justify-content: space-between; font-size: 0.8rem; color: #7f8c8d; margin-bottom: 10px; font-weight: bold; }
-        .progress-container { width: 100%; background: #ecf0f1; height: 8px; border-radius: 4px; margin-bottom: 20px; }
-        .progress-bar { background: #27ae60; height: 100%; width: 0%; border-radius: 4px; transition: 0.4s; }
-        h1 { font-size: 1.2rem; color: #34495e; min-height: 80px; margin-bottom: 20px; line-height: 1.5; display: flex; align-items: center; justify-content: center; }
-        input { width: 100%; padding: 12px; border: 2px solid #bdc3c7; border-radius: 8px; font-size: 1.1rem; text-align: center; margin-bottom: 15px; outline: none; }
-        input:focus { border-color: #27ae60; }
-        .btn { background: #27ae60; color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-size: 1.1rem; cursor: pointer; font-weight: bold; }
-        .feedback { height: 20px; margin-top: 10px; font-weight: bold; font-size: 0.9rem; }
+        body { font-family: sans-serif; background: #1a1a2e; color: #fff; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 10px; }
+        .game-container { background: #16213e; padding: 25px; border-radius: 15px; width: 100%; max-width: 500px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 2px solid #0f3460; }
+        .stats { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 15px; color: #4ecca3; }
+        .progress-bg { background: #0f3460; height: 10px; border-radius: 5px; margin-bottom: 20px; overflow: hidden; }
+        .progress-fill { background: #4ecca3; height: 100%; width: 0%; transition: 0.3s; }
+        h2 { font-size: 1.1rem; min-height: 80px; margin-bottom: 20px; line-height: 1.5; }
+        input { width: 100%; padding: 12px; border-radius: 8px; border: none; font-size: 1rem; margin-bottom: 15px; text-align: center; }
+        button { width: 100%; padding: 12px; border-radius: 8px; border: none; background: #4ecca3; color: #1a1a2e; font-weight: bold; font-size: 1rem; cursor: pointer; }
+        button:active { transform: scale(0.98); }
+        .feedback { margin-top: 15px; font-weight: bold; height: 20px; }
     </style>
 </head>
 <body>
 
-<div class="card">
+<div class="game-container">
     <div class="stats">
-        <span id="counter">Cuenta 1/60</span>
-        <span id="score-text">Aciertos: 0</span>
+        <span id="counter">Pregunta 1/60</span>
+        <span id="score">Puntos: 0</span>
     </div>
-    <div class="progress-container"><div class="progress-bar" id="progress"></div></div>
-    <h1 id="question">Cargando...</h1>
-    <input type="text" id="answer-input" placeholder="Nombre de la cuenta..." autocomplete="off">
-    <button class="btn" onclick="checkAnswer()">Comprobar</button>
-    <div class="feedback" id="feedback"></div>
+    <div class="progress-bg"><div class="progress-fill" id="bar"></div></div>
+    <h2 id="question">Cargando cuentas...</h2>
+    <input type="text" id="answer" placeholder="Escribe el nombre aquí..." autocomplete="off">
+    <button onclick="check()">VERIFICAR</button>
+    <div class="feedback" id="msg"></div>
 </div>
 
 <script>
-    const allAccounts = [
-        // --- ACTIVO ---
-        { q: "Dinero en efectivo, billetes y monedas propiedad de la empresa.", a: "Caja" },
-        { q: "Fondo para cubrir gastos menores y urgentes.", a: "Caja chica" },
-        { q: "Dinero depositado en bancos en cuentas de cheques o ahorro.", a: "Bancos" },
-        { q: "Inversiones en bonos o valores de inmediata recuperación.", a: "Inversiones en bonos" },
-        { q: "Personas que deben por venta de mercadería al crédito.", a: "Clientes" },
-        { q: "Títulos de crédito (letras, pagarés) a favor del negocio.", a: "Documentos por cobrar" },
-        { q: "Personas que deben por conceptos distintos a la mercadería.", a: "Deudores varios" },
-        { q: "Intereses devengados a favor aún no cobrados.", a: "Intereses por cobrar" },
-        { q: "Impuesto pagado en las compras (ISV).", a: "Impuesto sobre ventas pagado" },
-        { q: "Valor de las mercancías destinadas a la venta.", a: "Inventarios" },
-        { q: "Materiales de oficina (papel, lápices, carpetas).", a: "Papelería y útiles" },
-        { q: "Artículos para aseo y mantenimiento del local.", a: "Material de aseo" },
-        { q: "Bolsas, cajas y envolturas para el producto.", a: "Material de empaque" },
-        { q: "Pagos por anuncios en medios de comunicación.", a: "Propaganda y publicidad" },
-        { q: "Pagos a aseguradoras por protección de activos.", a: "Primas de seguro" },
-        { q: "Pago adelantado por alquiler de local o bodega.", a: "Rentas pagadas por anticipado" },
-        { q: "Intereses pagados antes de su vencimiento.", a: "Intereses pagados por anticipado" },
-        { q: "Predios o lotes de tierra propiedad del negocio.", a: "Terrenos" },
-        { q: "Edificaciones y locales propiedad de la empresa.", a: "Edificios" },
-        { q: "Sillas, escritorios, vitrinas y estantes.", a: "Mobiliario y equipo" },
-        { q: "Computadoras, impresoras y software.", a: "Equipo de computo" },
-        { q: "Vehículos para transporte de personal o carga.", a: "Equipo de transporte" },
-        { q: "Maquinaria y herramientas pesadas de producción.", a: "Maquinaria" },
-        { q: "Depósitos entregados para garantizar servicios.", a: "Depositos en garantia" },
-        { q: "Gasto por la constitución legal de la empresa.", a: "Gastos de organizacion" },
-        { q: "Gasto por instalación y montaje de equipo.", a: "Gastos de instalacion" },
-
-        // --- PASIVO ---
-        { q: "Deudas por compra de mercadería al crédito.", a: "Proveedores" },
-        { q: "Letras o pagarés a cargo de la empresa (firmados).", a: "Documentos por pagar" },
-        { q: "Deudas por algo que NO es mercadería.", a: "Acreedores varios" },
-        { q: "Préstamos bancarios a corto plazo.", a: "Prestamos bancarios" },
-        { q: "Sueldos ya ganados por empleados pero no pagados.", a: "Sueldos y salarios por pagar" },
-        { q: "Impuestos pendientes de pago al gobierno.", a: "Impuestos por pagar" },
-        { q: "Intereses que debemos y aún no pagamos.", a: "Intereses por pagar" },
-        { q: "Servicios (agua, luz) devengados no pagados.", a: "Servicios publicos por pagar" },
-        { q: "Alquileres que recibimos por adelantado.", a: "Rentas cobradas por anticipado" },
-        { q: "Intereses cobrados antes de su vencimiento.", a: "Intereses cobrados por anticipado" },
-        { q: "Préstamos bancarios a más de un año plazo.", a: "Prestamos bancarios a largo plazo" },
-        { q: "Deudas con garantía de bienes inmuebles.", a: "Hipotecas por pagar" },
-
-        // --- PATRIMONIO (Aquí están las que faltaban) ---
-        { q: "Aportaciones de capital hechas por el dueño o socios.", a: "Capital social" },
-        { q: "Ganancias de años anteriores que no se repartieron.", a: "Utilidades acumuladas" },
-        { q: "Beneficio neto logrado en el año actual.", a: "Utilidad del ejercicio" },
-        { q: "Pérdida neta ocurrida en el año actual.", a: "Perdida del ejercicio" },
-        { q: "Reserva de dinero exigida por la ley mercantil.", a: "Reserva legal" },
-
-        // --- RESULTADOS ---
-        { q: "Ingresos totales por venta de mercadería.", a: "Ventas" },
-        { q: "Valor de las mercaderías compradas en el año.", a: "Compras" },
-        { q: "Fletes y acarreos de la mercadería comprada.", a: "Gastos sobre compras" },
-        { q: "Gastos del departamento de ventas (publicidad, sueldos).", a: "Gastos de venta" },
-        { q: "Gastos de la dirección y oficinas (sueldos admin).", a: "Gastos de administracion" },
-        { q: "Gastos por intereses, comisiones y descuentos.", a: "Gastos financieros" },
-        { q: "Ingresos por intereses ganados o cambios de moneda.", a: "Productos financieros" },
-        { q: "Gastos extraordinarios como multas o robos.", a: "Otros gastos" },
-        { q: "Ingresos extraordinarios como venta de sobrantes.", a: "Otros productos" },
-        { q: "Costo de la mercadería que efectivamente se vendió.", a: "Costo de ventas" },
-        { q: "Mercadería que los clientes nos regresan.", a: "Devoluciones sobre ventas" },
-        { q: "Descuento que damos a clientes por estar dañada.", a: "Rebajas sobre ventas" },
-        { q: "Mercadería que regresamos a los proveedores.", a: "Devoluciones sobre compras" },
-        { q: "Descuento que nos da el proveedor por daño.", a: "Rebajas sobre compras" },
-        { q: "Descuento otorgado por pronto pago a clientes.", a: "Descuentos sobre ventas" },
-        { q: "Descuento recibido por pronto pago a proveedores.", a: "Descuentos sobre compras" },
-        { q: "Impuesto sobre ventas retenido en las ventas.", a: "Impuesto sobre ventas cobrado" }
+    const db = [
+        {q: "Dinero en efectivo, billetes y monedas.", a: "Caja"},
+        {q: "Fondo para gastos menores y urgentes.", a: "Caja chica"},
+        {q: "Dinero en cuentas de cheques o ahorros.", a: "Bancos"},
+        {q: "Inversiones en bonos de inmediata recuperación.", a: "Inversiones en bonos"},
+        {q: "Personas que deben por venta de mercadería al crédito.", a: "Clientes"},
+        {q: "Letras o pagarés a favor del negocio.", a: "Documentos por cobrar"},
+        {q: "Personas que deben por algo que no es mercadería.", a: "Deudores varios"},
+        {q: "Intereses ganados aún no cobrados.", a: "Intereses por cobrar"},
+        {q: "Impuesto pagado en las compras (ISV).", a: "Impuesto sobre ventas pagado"},
+        {q: "Mercancías destinadas para la venta.", a: "Inventarios"},
+        {q: "Papel, lápices y útiles de oficina.", a: "Papeleria y utiles"},
+        {q: "Artículos de limpieza para el local.", a: "Material de aseo"},
+        {q: "Bolsas y cajas para el producto.", a: "Material de empaque"},
+        {q: "Pagos por anuncios en radio o prensa.", a: "Propaganda y publicidad"},
+        {q: "Pagos a aseguradoras por protección.", a: "Primas de seguro"},
+        {q: "Alquiler pagado por adelantado.", a: "Rentas pagadas por anticipado"},
+        {q: "Intereses pagados antes de vencer.", a: "Intereses pagados por anticipado"},
+        {q: "Lotes de tierra propiedad del negocio.", a: "Terrenos"},
+        {q: "Locales o edificios de la empresa.", a: "Edificios"},
+        {q: "Escritorios, sillas y vitrinas.", a: "Mobiliario y equipo"},
+        {q: "Computadoras e impresoras.", a: "Equipo de computo"},
+        {q: "Carros o motos de la empresa.", a: "Equipo de transporte"},
+        {q: "Maquinaria pesada de producción.", a: "Maquinaria"},
+        {q: "Dinero entregado para asegurar un servicio.", a: "Depositos en garantia"},
+        {q: "Gastos por trámites legales de la empresa.", a: "Gastos de organizacion"},
+        {q: "Gastos por instalación de equipo.", a: "Gastos de instalacion"},
+        {q: "Deudas por compra de mercadería al crédito.", a: "Proveedores"},
+        {q: "Letras o pagarés a nuestro cargo.", a: "Documentos por pagar"},
+        {q: "Deudas por conceptos ajenos a la mercadería.", a: "Acreedores varios"},
+        {q: "Préstamos bancarios a corto plazo.", a: "Prestamos bancarios"},
+        {q: "Sueldos no pagados a los empleados.", a: "Sueldos y salarios por pagar"},
+        {q: "Impuestos pendientes de pago.", a: "Impuestos por pagar"},
+        {q: "Intereses que debemos y no hemos pagado.", a: "Intereses por pagar"},
+        {q: "Agua o luz no pagada.", a: "Servicios publicos por pagar"},
+        {q: "Alquileres cobrados por adelantado.", a: "Rentas cobradas por anticipado"},
+        {q: "Intereses cobrados por adelantado.", a: "Intereses cobrados por anticipado"},
+        {q: "Préstamos bancarios a más de un año.", a: "Prestamos bancarios a largo plazo"},
+        {q: "Deudas con garantía de escrituras.", a: "Hipotecas por pagar"},
+        {q: "Aportaciones de los dueños.", a: "Capital social"},
+        {q: "Ganancias de años anteriores.", a: "Utilidades acumuladas"},
+        {q: "Ganancia neta del año actual.", a: "Utilidad del ejercicio"},
+        {q: "Pérdida neta del año actual.", a: "Perdida del ejercicio"},
+        {q: "Reserva exigida por la ley.", a: "Reserva legal"},
+        {q: "Ingresos por venta de productos.", a: "Ventas"},
+        {q: "Valor de las mercancías compradas.", a: "Compras"},
+        {q: "Fletes de la mercadería comprada.", a: "Gastos sobre compras"},
+        {q: "Gastos del área de ventas.", a: "Gastos de venta"},
+        {q: "Gastos del área administrativa.", a: "Gastos de administracion"},
+        {q: "Gastos por intereses o comisiones.", a: "Gastos financieros"},
+        {q: "Ganancia por intereses o cambios.", a: "Productos financieros"},
+        {q: "Multas o gastos no comunes.", a: "Otros gastos"},
+        {q: "Ingresos no comunes.", a: "Otros productos"},
+        {q: "Costo de lo que se vendió.", a: "Costo de ventas"},
+        {q: "Mercancía devuelta por clientes.", a: "Devoluciones sobre ventas"},
+        {q: "Rebaja concedida a clientes.", a: "Rebajas sobre ventas"},
+        {q: "Mercancía devuelta a proveedores.", a: "Devoluciones sobre compras"},
+        {q: "Rebaja que nos da el proveedor.", a: "Rebajas sobre compras"},
+        {q: "Descuento a clientes por pronto pago.", a: "Descuentos sobre ventas"},
+        {q: "Descuento de proveedores por pronto pago.", a: "Descuentos sobre compras"},
+        {q: "Impuesto cobrado en las ventas (ISV).", a: "Impuesto sobre ventas cobrado"}
     ];
 
-    let questions = [];
-    let currentIdx = 0;
-    let score = 0;
+    let game = [], idx = 0, pts = 0;
 
-    function init() {
-        questions = [...allAccounts].sort(() => Math.random() - 0.5);
+    function start() {
+        game = [...db].sort(() => Math.random() - 0.5);
         show();
     }
 
     function show() {
-        if(currentIdx < questions.length) {
-            document.getElementById('question').innerText = questions[currentIdx].q;
-            document.getElementById('answer-input').value = "";
-            document.getElementById('feedback').innerText = "";
-            document.getElementById('counter').innerText = Cuenta ${currentIdx+1}/${questions.length};
-            document.getElementById('progress').style.width = ${(currentIdx/questions.length)*100}%;
+        if(idx < game.length) {
+            document.getElementById('question').innerText = game[idx].q;
+            document.getElementById('counter').innerText = `Pregunta ${idx + 1}/${game.length}`;
+            document.getElementById('bar').style.width = `${(idx/game.length)*100}%`;
+            document.getElementById('answer').value = "";
+            document.getElementById('msg').innerText = "";
         } else {
-            document.getElementById('question').innerText = "¡Misión Cumplida! Dominas las 60 cuentas.";
-            document.getElementById('answer-input').style.display = "none";
+            document.getElementById('question').innerText = "¡FELICIDADES! DOMINAS LAS 60 CUENTAS.";
         }
     }
 
-    function checkAnswer() {
-        let u = document.getElementById('answer-input').value.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        let a = questions[currentIdx].a.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        
+    function check() {
+        let u = document.getElementById('answer').value.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        let a = game[idx].a.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         if(u === a) {
-            score++;
-            document.getElementById('feedback').innerText = "¡Correcto! ✓";
-            document.getElementById('feedback').style.color = "#27ae60";
-            currentIdx++;
-            document.getElementById('score-text').innerText = Aciertos: ${score};
+            pts++;
+            document.getElementById('score').innerText = `Puntos: ${pts}`;
+            document.getElementById('msg').innerText = "¡CORRECTO!";
+            document.getElementById('msg').style.color = "#4ecca3";
+            idx++;
             setTimeout(show, 600);
         } else {
-            document.getElementById('feedback').innerText = "Vuelve a intentar...";
-            document.getElementById('feedback').style.color = "#e74c3c";
+            document.getElementById('msg').innerText = "ERROR - Revisa el nombre";
+            document.getElementById('msg').style.color = "#ff4d4d";
         }
     }
 
-    document.getElementById('answer-input').addEventListener('keypress', e => { if(e.key === 'Enter') checkAnswer(); });
-    init();
+    document.getElementById('answer').addEventListener('keypress', (e) => { if(e.key === 'Enter') check(); });
+    start();
 </script>
 </body>
 </html>
