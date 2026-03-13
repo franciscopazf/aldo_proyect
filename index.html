@@ -399,7 +399,7 @@
 <div class="wrap">
 
   <!-- ═══ MENÚ ═══ -->
-  <div id="screen-menu" style="display: none;">
+  <div id="screen-menu">
     <div class="logo-badge">Master Contable</div>
     <h1 class="menu-title">60 Cuentas.<br>Domínalas.</h1>
     <p class="menu-sub">Aprende el catálogo contable completo con<br>ejercicios interactivos y seguimiento de racha.</p>
@@ -448,7 +448,7 @@
   </div>
 
   <!-- ═══ JUEGO ═══ -->
-  <div id="screen-game" style="display: block;">
+  <div id="screen-game">
     <div class="hud">
       <div class="hud-left">
         <button class="btn-back" onclick="goMenu()" title="Menú">←</button>
@@ -464,12 +464,12 @@
     </div>
 
     <div class="progress-wrap">
-      <div class="progress-fill" id="prog-fill" style="width: 0%;"></div>
+      <div class="progress-fill" id="prog-fill"></div>
     </div>
 
     <div class="q-card" id="q-card">
       <div class="q-num" id="q-num">Pregunta 1</div>
-      <div class="q-text" id="q-text">Reserva constituida separando anualmente el 5% mínimo de las utilidades netas según el Código de Comercio.</div>
+      <div class="q-text" id="q-text">Cargando…</div>
     </div>
 
     <!-- MODO ESCRIBIR -->
@@ -485,35 +485,15 @@
     </div>
 
     <!-- MODO OPCIONES -->
-    <div id="zone-opciones" style="display: block;">
-      <div class="options-grid" id="opts-grid">
-    <button class="opt" onclick="checkOpcion(this,'Marcas y patentes')">
-      <span class="opt-letter">A</span>
-      Marcas y patentes
-    </button>
-  
-    <button class="opt" onclick="checkOpcion(this,'Reserva legal')">
-      <span class="opt-letter">B</span>
-      Reserva legal
-    </button>
-  
-    <button class="opt" onclick="checkOpcion(this,'Impuestos por pagar')">
-      <span class="opt-letter">C</span>
-      Impuestos por pagar
-    </button>
-  
-    <button class="opt" onclick="checkOpcion(this,'Edificios')">
-      <span class="opt-letter">D</span>
-      Edificios
-    </button>
-  </div>
+    <div id="zone-opciones" style="display:none">
+      <div class="options-grid" id="opts-grid"></div>
     </div>
 
     <div class="feedback" id="feedback"></div>
   </div>
 
   <!-- ═══ RESULTADO ═══ -->
-  <div id="screen-result" style="display: none;">
+  <div id="screen-result">
     <div class="result-ring">
       <svg viewBox="0 0 136 136"><circle cx="68" cy="68" r="65" id="ring-circle"></circle></svg>
       <div class="result-pct" id="result-pct">0%</div>
